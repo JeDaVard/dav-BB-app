@@ -1,16 +1,21 @@
-import React from "react";
-import Backdrop from "../Backdrop/Backdrop";
+import React from 'react';
+import Backdrop from '../Backdrop/Backdrop';
 import classes from './Modal.module.css';
 
-const Modal = props => {
+function Modal (props) {
+    console.log('updated');
     return (
         <>
-            <Backdrop order={!props.hidden} click={props.modalClose}/>
+            <Backdrop order={!props.hidden} click={props.modalClose} />
             <div className={classes.Modal} hidden={props.hidden}>
                 {props.children}
             </div>
         </>
-    )
-};
+    );
+}
 
-export default Modal;
+function shouldUpdate(p, n) {
+    return p.hidden === n.hidden
+}
+
+export default React.memo(Modal, shouldUpdate);
