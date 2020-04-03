@@ -21,12 +21,18 @@ function BurgerBuilder(props) {
         purchasable: false,
         purchasing: false,
         loading: false,
+        error: false
     });
 
     useEffect(() => {
         axios.get('/ingredients.json')
             .then(({data}) => setState(state => ({...state, ingredients: data})))
-            .catch(e => console.log(e))
+            .catch((() => {
+                setState((state) => ({
+                    ...state,
+                        error: 'Connection error: cannot load ingredients'
+                }))
+            }));
     }, []);
 
     const updatePurchasable = updatedIngredients => {
@@ -97,49 +103,51 @@ function BurgerBuilder(props) {
             setState((state) => ({
                 ...state,loading: false, purchasing: false}))
         })
-        .catch(error => {
+        .catch(() => {
             setState((state) => ({
                 ...state,
                 loading: false}));
-            console.log(error)
         })
     };
     const disabledInfo = { ...state.ingredients };
     for (let key in disabledInfo)
         disabledInfo[key] = disabledInfo[key] <= 0;
-    let burgerBuilder = state.ingredients ? (
-        <>
-            <Burger ingredients={state.ingredients} />
-            <BuildControls
-                price={state.totalPrice}
-                purchasable={state.purchasable}
-                more={addIngredientHandler}
-                less={removeIngredientHandler}
-                disabled={disabledInfo}
-                order={purchaseHandler}
-            />
-        </>
-    ) : (
-        <Spinner />
-    );
+    let orderSummary = null;
+
+    let burger = state.error ? <p className={'tcenter'}>{state.error}</p> : <Spinner />;
+    if (state.ingredients) {
+        burger = (
+            <>
+                <Burger ingredients={state.ingredients} />
+                <BuildControls
+                    price={state.totalPrice}
+                    purchasable={state.purchasable}
+                    more={addIngredientHandler}
+                    less={removeIngredientHandler}
+                    disabled={disabledInfo}
+                    order={purchaseHandler}
+                />
+            </>
+        );
+        orderSummary = <OrderSummary
+            ingredients={state.ingredients}
+            cancel={modalClose}
+            continue={order}
+            price={state.totalPrice}
+        />;
+    }
+    if (state.loading) {
+        orderSummary = <Spinner />
+    }
     return (
         <>
             <Modal
                 hidden={!state.purchasing}
                 modalClose={modalClose}
             >
-                {state.loading || (state.ingredients === null) ? (
-                    <Spinner />
-                ) : (
-                    <OrderSummary
-                        ingredients={state.ingredients}
-                        cancel={modalClose}
-                        continue={order}
-                        price={state.totalPrice}
-                    />
-                )}
+                {orderSummary}
             </Modal>
-            {burgerBuilder}
+            {burger}
         </>
     );
 }
