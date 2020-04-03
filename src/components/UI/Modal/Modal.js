@@ -3,7 +3,6 @@ import Backdrop from '../Backdrop/Backdrop';
 import classes from './Modal.module.css';
 
 function Modal (props) {
-    console.log('updated');
     return (
         <>
             <Backdrop order={!props.hidden} click={props.modalClose} />
@@ -14,8 +13,8 @@ function Modal (props) {
     );
 }
 
-function shouldUpdate(p, n) {
-    return p.hidden === n.hidden
+function noUpdate(p, n) {
+    return (p.hidden === n.hidden) ? p.children === n.children : false;
 }
 
-export default React.memo(Modal, shouldUpdate);
+export default React.memo(Modal, noUpdate);

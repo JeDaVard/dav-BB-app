@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Burger from '../components/Burger/Burger';
 import BuildControls from '../components/Burger/BuildControls/BuildControls';
 import Modal from '../components/UI/Modal/Modal';
 import OrderSummary from '../components/Burger/OrderSummary/OrderSummary';
+import axios from '../axios-orders';
+import Spinner from '../components/UI/Spinners/Spinner';
+import errorHandlerHOC from "./errorHandlerHOC";
 
 const INGREDIENT_PRICE = {
     salad: 0.5,
@@ -11,91 +14,134 @@ const INGREDIENT_PRICE = {
     meat: 5,
 };
 
-class BurgerBuilder extends React.Component {
-    state = {
-        ingredients: {
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0,
-        },
+function BurgerBuilder(props) {
+    const [state, setState] = useState({
+        ingredients: null,
         totalPrice: 4,
         purchasable: false,
         purchasing: false,
-    };
+        loading: false,
+    });
 
-    updatePurchasable = updatedIngredients => {
+    useEffect(() => {
+        axios.get('/ingredients.json')
+            .then(({data}) => setState(state => ({...state, ingredients: data})))
+            .catch(e => console.log(e))
+    }, []);
+
+    const updatePurchasable = updatedIngredients => {
         const sum = Object.values(updatedIngredients).reduce((sum, el) => {
             return sum + el;
         }, 0);
 
-        this.setState({ purchasable: !!sum });
+        setState((state) => ({
+            ...state,
+            purchasable: !!sum
+        }));
     };
-    addIngredientHandler = type => {
-        const updatedIngredients = { ...this.state.ingredients };
-        updatedIngredients[type] = this.state.ingredients[type] + 1;
+    const addIngredientHandler = type => {
+        const updatedIngredients = { ...state.ingredients };
+        updatedIngredients[type] = state.ingredients[type] + 1;
 
-        const updatedPrice = this.state.totalPrice + INGREDIENT_PRICE[type];
+        const updatedPrice = state.totalPrice + INGREDIENT_PRICE[type];
 
-        this.setState({
+        setState((state) => ({
+            ...state,
             ingredients: updatedIngredients,
             totalPrice: updatedPrice,
-        });
+        }));
 
-        this.updatePurchasable(updatedIngredients);
+        updatePurchasable(updatedIngredients);
     };
-    removeIngredientHandler = type => {
-        if (this.state.ingredients[type] <= 0) return;
-        const updatedIngredients = { ...this.state.ingredients };
-        updatedIngredients[type] = this.state.ingredients[type] - 1;
+    const removeIngredientHandler = type => {
+        if (state.ingredients[type] <= 0) return;
+        const updatedIngredients = { ...state.ingredients };
+        updatedIngredients[type] = state.ingredients[type] - 1;
 
-        const updatedPrice = this.state.totalPrice - INGREDIENT_PRICE[type];
+        const updatedPrice = state.totalPrice - INGREDIENT_PRICE[type];
 
-        this.setState({
+        setState((state) => ({
+            ...state,
             ingredients: updatedIngredients,
             totalPrice: updatedPrice,
-        });
+        }));
 
-        this.updatePurchasable(updatedIngredients);
+        updatePurchasable(updatedIngredients);
     };
-    purchaseHandler() {
-        this.setState({ purchasing: true });
-    }
-    modalClose = () => {
-        this.setState({ purchasing: false });
+    const purchaseHandler = () => {
+        setState((state) => ({
+            ...state, purchasing: true }));
     };
-    order = () => {};
-
-    render() {
-        const disabledInfo = { ...this.state.ingredients };
-        for (let key in disabledInfo)
-            disabledInfo[key] = disabledInfo[key] <= 0;
-
-        return (
-            <>
-                <Modal
-                    hidden={!this.state.purchasing}
-                    modalClose={this.modalClose}
-                >
+    const modalClose = () => {
+        setState((state) => ({
+            ...state,purchasing: false }));
+    };
+    const order = () => {
+        setState((state) => ({
+            ...state, loading: true }));
+        const order = {
+            ingredients: state.ingredients,
+            price: state.totalPrice,
+            customer: {
+                name: 'Davit',
+                address: {
+                    street: 'Vratsakan',
+                    country: 'Armenia',
+                },
+                email: 'jedavard@gmail.com',
+            },
+            deliveryMethod: 'fast',
+        };
+        axios.post('/orders.json', order)
+        .then(() => {
+            setState((state) => ({
+                ...state,loading: false, purchasing: false}))
+        })
+        .catch(error => {
+            setState((state) => ({
+                ...state,
+                loading: false}));
+            console.log(error)
+        })
+    };
+    const disabledInfo = { ...state.ingredients };
+    for (let key in disabledInfo)
+        disabledInfo[key] = disabledInfo[key] <= 0;
+    let burgerBuilder = state.ingredients ? (
+        <>
+            <Burger ingredients={state.ingredients} />
+            <BuildControls
+                price={state.totalPrice}
+                purchasable={state.purchasable}
+                more={addIngredientHandler}
+                less={removeIngredientHandler}
+                disabled={disabledInfo}
+                order={purchaseHandler}
+            />
+        </>
+    ) : (
+        <Spinner />
+    );
+    return (
+        <>
+            <Modal
+                hidden={!state.purchasing}
+                modalClose={modalClose}
+            >
+                {state.loading || (state.ingredients === null) ? (
+                    <Spinner />
+                ) : (
                     <OrderSummary
-                        ingredients={this.state.ingredients}
-                        cancel={this.modalClose}
-                        continue={this.order}
-                        price={this.state.totalPrice}
+                        ingredients={state.ingredients}
+                        cancel={modalClose}
+                        continue={order}
+                        price={state.totalPrice}
                     />
-                </Modal>
-                <Burger ingredients={this.state.ingredients} />
-                <BuildControls
-                    price={this.state.totalPrice}
-                    purchasable={this.state.purchasable}
-                    more={this.addIngredientHandler}
-                    less={this.removeIngredientHandler}
-                    disabled={disabledInfo}
-                    order={this.purchaseHandler.bind(this)}
-                />
-            </>
-        );
-    }
+                )}
+            </Modal>
+            {burgerBuilder}
+        </>
+    );
 }
 
-export default BurgerBuilder;
+export default errorHandlerHOC(BurgerBuilder, axios);
