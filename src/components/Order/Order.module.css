@@ -1,0 +1,59 @@
+.Order {
+    width: 60%;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 3px #ccc;
+    padding: 10px;
+    margin: 10px auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0, .1);
+}
+
+.top p {
+    margin: 0;
+    padding: 0 0 7px 0;
+}
+
+.date {
+    color: rgba(0, 0, 0, 0.49);
+    font-size: 14px;
+}
+
+.id {
+    color: rgba(0, 0, 0, 0.32);
+    font-size: 12px;
+}
+
+.body {
+    margin: 20px 0
+}
+
+.ingredient {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ingredient p {
+    color: #7f3608;
+    padding: 5px;
+    margin: 0;
+}
+
+.ingredient:not(:last-of-type) {
+    border-bottom: 1px dashed rgba(0,0,0, .1);
+}
+
+.bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(0,0,0, .1);
+}

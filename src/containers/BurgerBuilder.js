@@ -26,7 +26,14 @@ function BurgerBuilder(props) {
 
     useEffect(() => {
         axios.get('/ingredients.json')
-            .then(({data}) => setState(state => ({...state, ingredients: data})))
+            .then(({data}) => {
+                const ingredientsOrder = ['salad', 'bacon', 'cheese', 'meat'];
+                const ingredients = {};
+                for (let i of ingredientsOrder) {
+                   ingredients[i] = data[i]
+                }
+                setState(state => ({...state, ingredients}))
+            })
             .catch((() => {
                 setState((state) => ({
                     ...state,
@@ -82,32 +89,19 @@ function BurgerBuilder(props) {
         setState((state) => ({
             ...state,purchasing: false }));
     };
+
     const order = () => {
-        setState((state) => ({
-            ...state, loading: true }));
-        const order = {
-            ingredients: state.ingredients,
-            price: state.totalPrice,
-            customer: {
-                name: 'Davit',
-                address: {
-                    street: 'Vratsakan',
-                    country: 'Armenia',
-                },
-                email: 'jedavard@gmail.com',
-            },
-            deliveryMethod: 'fast',
-        };
-        axios.post('/orders.json', order)
-        .then(() => {
-            setState((state) => ({
-                ...state,loading: false, purchasing: false}))
-        })
-        .catch(() => {
-            setState((state) => ({
-                ...state,
-                loading: false}));
-        })
+        const queryParams = [];
+        for (let i in state.ingredients) {
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(state.ingredients[i]) )
+        }
+        queryParams.push(`price=${state.totalPrice}`);
+        const search = '?' + queryParams.join('&');
+        props.history.push({
+            pathname: '/checkout',
+            search,
+
+        });
     };
     const disabledInfo = { ...state.ingredients };
     for (let key in disabledInfo)
