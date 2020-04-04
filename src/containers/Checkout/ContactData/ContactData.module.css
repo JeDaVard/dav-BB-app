@@ -3,13 +3,11 @@
     width: 80%;
     text-align: center;
     box-shadow: 0 2px 3px #ccc;
-    border: 1px solid #eee;
+    border: 1px solid #b7925f;
     padding: 10px;
     box-sizing: border-box;
-}
-
-.Input {
-    display: block;
+    background-color: #c1995f;
+    color: #322819;
 }
 
 @media (min-width: 600px) {

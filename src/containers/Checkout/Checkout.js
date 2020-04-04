@@ -19,7 +19,7 @@ function Checkout(props) {
         }
         setState(state => ({ ...state, ingredients, totalPrice }));
     }, []);
-    console.log(state)
+
     const checkoutCanceledHandler = () => {
         props.history.goBack();
     };
