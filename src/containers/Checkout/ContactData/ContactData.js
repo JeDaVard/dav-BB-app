@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import Button from '../../../components/UI/Button/Button';
 import classes from './ContactData.module.css';
 import axios from '../../../axios-orders';
 import Spinner from '../../../components/UI/Spinners/Spinner';
 import Input from '../../../components/UI/Input/Input';
 
-export default function ContactData({ ingredients, totalPrice, history }) {
+function ContactData({ ingredients, totalPrice, history }) {
+    if (totalPrice <= 4) history.push('/');
     const [state, setState] = useState({
         orderForm: {
             name: {
@@ -137,3 +139,10 @@ export default function ContactData({ ingredients, totalPrice, history }) {
         </div>
     );
 }
+
+const mapStateToProps = state => ({
+    ingredients: state.bb.ingredients,
+    totalPrice: state.bb.totalPrice
+});
+
+export default connect(mapStateToProps)(ContactData)

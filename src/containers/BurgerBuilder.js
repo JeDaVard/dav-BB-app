@@ -7,38 +7,23 @@ import OrderSummary from '../components/Burger/OrderSummary/OrderSummary';
 import axios from '../axios-orders';
 import Spinner from '../components/UI/Spinners/Spinner';
 import errorHandlerHOC from "./errorHandlerHOC"
-import * as actionTypes from '../actions/types'
+import * as actions from '../store/actions'
 
 
 function BurgerBuilder(props) {
-    const [state, setState] = useState({
-        purchasing: false,
-        loading: false,
-        error: false
-    });
+    const [state, setState] = useState({ purchasing: false });
+    const { fetchIngredients, error} = props;
+
+    useEffect(() => {
+        fetchIngredients()
+    }, [fetchIngredients, error]);
+
     const updatePurchasable = updatedIngredients => {
         const sum = Object.values(updatedIngredients).reduce((sum, el) => {
             return sum + el;
         }, 0);
         return !!sum
     };
-    // useEffect(() => {
-    //     axios.get('/ingredients.json')
-    //         .then(({data}) => {
-    //             const ingredientsOrder = ['salad', 'bacon', 'cheese', 'meat'];
-    //             const ingredients = {};
-    //             for (let i of ingredientsOrder) {
-    //                ingredients[i] = data[i]
-    //             }
-    //             setState(state => ({...state, ingredients}))
-    //         })
-    //         .catch((() => {
-    //             setState((state) => ({
-    //                 ...state,
-    //                     error: 'Connection error: cannot load ingredients'
-    //             }))
-    //         }));
-    // }, []);
 
     const purchaseHandler = () => {
         setState((state) => ({
@@ -57,7 +42,7 @@ function BurgerBuilder(props) {
         disabledInfo[key] = disabledInfo[key] <= 0;
     let orderSummary = null;
 
-    let burger = state.error ? <p className={'tcenter'}>{state.error}</p> : <Spinner />;
+    let burger = error ? <p className={'tcenter'}>{error}</p> : <Spinner />;
     if (props.ingredients) {
         burger = (
             <>
@@ -96,13 +81,15 @@ function BurgerBuilder(props) {
 }
 
 const mapStateToProps = state => ({
-    ingredients: state.ingredients,
-    totalPrice: state.totalPrice,
+    ingredients: state.bb.ingredients,
+    totalPrice: state.bb.totalPrice,
+    error: state.bb.error
 });
 
 const mapDispatchToProps = dispatch => ({
-    addIngredient: (ingredient) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredient}),
-    removeIngredient: (ingredient) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredient}),
+    addIngredient: (ingredient) => dispatch(actions.addIngredient(ingredient)),
+    removeIngredient: (ingredient) => dispatch(actions.removeIngredient(ingredient)),
+    fetchIngredients: () => dispatch(actions.fetchIngredients()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(errorHandlerHOC(BurgerBuilder, axios));

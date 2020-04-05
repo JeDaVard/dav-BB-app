@@ -1,9 +1,11 @@
-import * as actionTypes from '../actions/types';
+import * as actionTypes from '../../actions/bbActions/types';
 
 const initialState = {
-    ingredients: { salad: 0, bacon: 0, cheese: 0, meat: 0 },
+    ingredients: null,
     purchasable: false,
     totalPrice: 4,
+    loading: false,
+    error: null,
 };
 const INGREDIENT_PRICE = {
     salad: 0.5,
@@ -14,6 +16,17 @@ const INGREDIENT_PRICE = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case actionTypes.FETCH_INGREDIENTS:
+            return {
+                ...state,
+                ingredients: action.ingredients,
+                error: null,
+            };
+        case actionTypes.FETCH_INGREDIENTS_ERROR:
+            return {
+                ...state,
+                error: action.error,
+            };
         case actionTypes.ADD_INGREDIENT:
             return {
                 ...state,
@@ -23,7 +36,7 @@ export default (state = initialState, action) => {
                         state.ingredients[action.ingredient] + 1,
                 },
                 totalPrice:
-                    state.totalPrice + INGREDIENT_PRICE[action.ingredient]
+                    state.totalPrice + INGREDIENT_PRICE[action.ingredient],
             };
         case actionTypes.REMOVE_INGREDIENT:
             return {
@@ -34,7 +47,7 @@ export default (state = initialState, action) => {
                         state.ingredients[action.ingredient] - 1,
                 },
                 totalPrice:
-                    state.totalPrice - INGREDIENT_PRICE[action.ingredient]
+                    state.totalPrice - INGREDIENT_PRICE[action.ingredient],
             };
         default:
             return state;
