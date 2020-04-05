@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import Button from '../../../components/UI/Button/Button';
 import classes from './ContactData.module.css';
-import axios from '../../../axios-orders';
 import Spinner from '../../../components/UI/Spinners/Spinner';
 import Input from '../../../components/UI/Input/Input';
+import * as actions from '../../../store/actions'
+import errorHandlerHOC from "../../errorHandlerHOC";
+import axios from '../../../axios-orders'
 
-function ContactData({ ingredients, totalPrice, history }) {
+function ContactData({ ingredients, totalPrice, history, purchase }) {
     if (totalPrice <= 4) history.push('/');
     const [state, setState] = useState({
         orderForm: {
@@ -76,22 +78,13 @@ function ContactData({ ingredients, totalPrice, history }) {
             date: Date.now(),
         };
 
-
-        axios
-            .post('/orders.json', order)
-            .then(() => {
-                setState(state => ({
-                    ...state,
-                    loading: false,
-                }));
-                history.push('/');
-            })
-            .catch(() => {
-                setState(state => ({
-                    ...state,
-                    loading: false,
-                }));
-            });
+        purchase(order).then(() => {
+            setState(state => ({
+                ...state,
+                loading: false,
+            }));
+            history.push('/')
+        })
     };
 
     const onChangeHandler = (e, ii ) => {
@@ -145,4 +138,8 @@ const mapStateToProps = state => ({
     totalPrice: state.bb.totalPrice
 });
 
-export default connect(mapStateToProps)(ContactData)
+const mapDispatchToProps = dispatch => ({
+    purchase: order => dispatch(actions.purchase(order))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(errorHandlerHOC(ContactData, axios))

@@ -17,6 +17,17 @@ export default (state = initialState, action) => {
                 ...state,
                 error: action.error
             };
+        case actions.PURCHASE_SUCCESS:
+            return {
+                ...state,
+                orders: state.orders.concat({...action.order, id: action.id}),
+                error: null
+            };
+        case actions.PURCHASE_FAILED:
+            return {
+                ...state,
+                error: action.error
+            };
         default:
             return state
     }

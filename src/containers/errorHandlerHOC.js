@@ -6,18 +6,12 @@ const errorHandlerHOC = (WrappedComponent, axios) => props => {
     useEffect(() => {
         const interReq = axios.interceptors.request.use(req => {
             setError({ e: null });
-            console.log('req req', req);
             return req;
-        }, err => {
-            console.log(err, 'in boundryrrrrrrrrrrrrrr')
-        });
+        }, e => {setError({ e })});
         return () => axios.interceptors.request.eject(interReq);
     }, []);
     useEffect(() => {
-        const interRes = axios.interceptors.response.use(res => {
-            console.log('resssssss', res)
-        }, e => {
-            console.log('eeeee', e);
+        const interRes = axios.interceptors.response.use(res => res, e => {
             setError({ e });
         });
         return () => axios.interceptors.response.eject(interRes);
