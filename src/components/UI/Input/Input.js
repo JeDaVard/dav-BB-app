@@ -32,6 +32,7 @@ export default function Input(props) {
                 {...props.elementConfig}
                 value={props.value}
                 onChange={props.onChange}
+                autoComplete={'suggested: "current-password"'}
             />
         );
     }

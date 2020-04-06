@@ -1,0 +1,42 @@
+.Auth {
+    margin: 20px auto;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    box-shadow: 0 2px 3px #ccc;
+    border: 1px solid #b7925f;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #c1995f;
+    color: #322819;
+}
+
+.Top {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.Top button {
+    outline: 0;
+    background: transparent;
+    color: #553d17;
+    border: 0;
+    font-size: 14px;
+    border-bottom: 2px solid #553d17;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.Top button:hover,
+.Top button:active {
+    filter: brightness(140%);
+    border-bottom: 2px solid #306d75;
+}
+
+@media (min-width: 600px) {
+    .Auth {
+        width: 500px;
+    }
+}
