@@ -10,15 +10,15 @@ import { Link } from 'react-router-dom';
 
 function Orders(props) {
     const [state, setState] = useState({ orders: [], loading: false });
-    const { fetchOrders, error, token } = props;
+    const { fetchOrders, error, token, userId } = props;
 
     useEffect(() => {
         setState(state => ({ ...state, loading: true }));
 
-        fetchOrders(token).then(() =>
+        fetchOrders(token, userId).then(() =>
             setState(state => ({ ...state, loading: false }))
         );
-    }, [fetchOrders, error, token]);
+    }, [fetchOrders, error, token, userId]);
 
     const orderList = props.orders.length ? (
         props.orders
@@ -44,10 +44,11 @@ const mapStateToProps = state => ({
     orders: state.orders.orders,
     error: state.orders.error,
     token: state.auth.token,
+    userId: state.auth.userId
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchOrders: token => dispatch(actions.fetchOrders(token)),
+    fetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId)),
 });
 
 export default connect(

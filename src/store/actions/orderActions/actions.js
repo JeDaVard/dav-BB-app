@@ -11,10 +11,11 @@ const setFetchOrdersError = error => ({
     type: actions.FETCH_ORDERS_ERROR,
     error
 });
-export const fetchOrders = (token) => (
+export const fetchOrders = (token, userId) => (
     async dispatch => {
         try {
-            const { data } = await axios.get(`/orders.json?auth=${token}`);
+            const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
+            const { data } = await axios.get(`/orders.json${queryParams}`);
             const orders = [];
             for (let order in data) {
                 orders.push({

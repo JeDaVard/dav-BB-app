@@ -8,7 +8,7 @@ import * as actions from '../../../store/actions'
 import errorHandlerHOC from "../../errorHandlerHOC";
 import axios from '../../../axios-orders'
 
-function ContactData({ ingredients, totalPrice, history, purchase, token }) {
+function ContactData({ ingredients, totalPrice, history, purchase, token, userId }) {
     if (totalPrice <= 4) history.push('/');
     const [state, setState] = useState({
         orderForm: {
@@ -72,6 +72,7 @@ function ContactData({ ingredients, totalPrice, history, purchase, token }) {
         }
 
         const order = {
+            userId,
             ingredients,
             totalPrice,
             customer,
@@ -136,7 +137,8 @@ function ContactData({ ingredients, totalPrice, history, purchase, token }) {
 const mapStateToProps = state => ({
     ingredients: state.bb.ingredients,
     totalPrice: state.bb.totalPrice,
-    token: state.auth.token
+    token: state.auth.token,
+    userId: state.auth.userId
 });
 
 const mapDispatchToProps = dispatch => ({

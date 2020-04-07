@@ -18,7 +18,7 @@ function App(props) {
             <Layout>
                 <Switch>
                     <Route path="/checkout" component={Checkout} />
-                    <Route path="/orders" component={Orders} />
+                    {props.isAuthenticated && <Route path="/orders" component={Orders} />}
                     <Route path="/sign-in" component={Auth} />
                     <Route path="/logout" component={Logout} />
                     <Route path="/" component={BurgerBuilder} />
@@ -28,4 +28,8 @@ function App(props) {
     );
 }
 
-export default connect(null, { checkAuth })(App);
+const mapStateToProps = state => ({
+   isAuthenticated: state.auth.token !== null
+});
+
+export default connect(mapStateToProps, { checkAuth })(App);

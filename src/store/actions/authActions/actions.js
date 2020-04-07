@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const upAPI = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDA1hNT5ZLWg1pfyjtx1i61QekAHu_4Dug';
 const inAPI = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDA1hNT5ZLWg1pfyjtx1i61QekAHu_4Dug';
-const getAPI = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDA1hNT5ZLWg1pfyjtx1i61QekAHu_4Dug';
+// const getAPI = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDA1hNT5ZLWg1pfyjtx1i61QekAHu_4Dug';
 
 const authStart = () => ({
     type: actions.AUTH_START
