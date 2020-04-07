@@ -12,5 +12,6 @@ export {
 export {
     auth,
     logOut,
-    authRedirect
+    authRedirect,
+    checkAuth
 } from './authActions/actions'
