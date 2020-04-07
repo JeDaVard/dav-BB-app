@@ -22,7 +22,7 @@ export const logOut = () => ({
     type: actions.LOG_OUT,
 });
 
-export const auth = (email, password, method) => (
+export const auth = (email, password, method, authRedirect) => (
     async dispatch => {
         try {
             dispatch(authStart());
@@ -37,3 +37,9 @@ export const auth = (email, password, method) => (
         }
     }
 );
+
+export const authRedirect = path => ({
+    type: actions.AUTH_REDIRECT,
+    path
+});
+

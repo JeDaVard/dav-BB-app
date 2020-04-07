@@ -6,6 +6,7 @@ const initialState = {
     purchasable: false,
     totalPrice: 4,
     loading: false,
+    building: false,
     error: null,
 };
 const INGREDIENT_PRICE = {
@@ -20,6 +21,7 @@ const fetchIngredients = (state, action) => (
         ingredients: action.ingredients,
         totalPrice: 4,
         error: null,
+        building: false
     })
 );
 const fetchIngredientsError = (state, action) => (
@@ -33,6 +35,7 @@ const addIngredient = (state, action) => {
         },
         totalPrice:
             state.totalPrice + INGREDIENT_PRICE[action.ingredient],
+        building: true
     };
     return updateObject(state, { ...newIncrState })
 };

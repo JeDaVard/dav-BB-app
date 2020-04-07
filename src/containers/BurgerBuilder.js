@@ -26,8 +26,13 @@ function BurgerBuilder(props) {
     };
 
     const purchaseHandler = () => {
-        setState((state) => ({
-            ...state, purchasing: true }));
+        if (props.isAuthenticated) {
+            setState((state) => ({
+                ...state, purchasing: true }));
+        } else {
+            props.authRedirect('/checkout');
+            props.history.push('/sign-in')
+        }
     };
     const modalClose = () => {
         setState((state) => ({
@@ -54,6 +59,7 @@ function BurgerBuilder(props) {
                     less={props.removeIngredient}
                     disabled={disabledInfo}
                     order={purchaseHandler}
+                    isAuth={props.isAuthenticated}
                 />
             </>
         );
@@ -83,13 +89,15 @@ function BurgerBuilder(props) {
 const mapStateToProps = state => ({
     ingredients: state.bb.ingredients,
     totalPrice: state.bb.totalPrice,
-    error: state.bb.error
+    error: state.bb.error,
+    isAuthenticated: state.auth.token !== null
 });
 
 const mapDispatchToProps = dispatch => ({
     addIngredient: (ingredient) => dispatch(actions.addIngredient(ingredient)),
     removeIngredient: (ingredient) => dispatch(actions.removeIngredient(ingredient)),
     fetchIngredients: () => dispatch(actions.fetchIngredients()),
+    authRedirect: (path) => dispatch(actions.authRedirect(path))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(errorHandlerHOC(BurgerBuilder, axios));

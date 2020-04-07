@@ -1,4 +1,5 @@
 import * as actions from '../../actions/orderActions/types';
+import { LOG_OUT} from "../../actions/authActions/types";
 import { updateObject } from "../unility";
 
 const initialState = {
@@ -18,6 +19,11 @@ const purchaseSuccess = (state, action) => (
 const purchaseFailed = (state, action) => (
     updateObject(state, { error: action.error } )
 );
+const logOut = (state) => (
+    updateObject(state, {
+        orders: []
+    })
+);
 
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -25,6 +31,7 @@ export default (state = initialState, action) => {
         case actions.FETCH_ORDERS_ERROR: return fetchOrdersError(state, action);
         case actions.PURCHASE_SUCCESS: return purchaseSuccess(state, action);
         case actions.PURCHASE_FAILED: return purchaseFailed(state, action);
+        case LOG_OUT: return logOut(state);
         default: return state
     }
 }

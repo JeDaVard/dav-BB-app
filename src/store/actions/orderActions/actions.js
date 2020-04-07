@@ -11,10 +11,10 @@ const setFetchOrdersError = error => ({
     type: actions.FETCH_ORDERS_ERROR,
     error
 });
-export const fetchOrders = () => (
+export const fetchOrders = (token) => (
     async dispatch => {
         try {
-            const { data } = await axios.get('/orders.json');
+            const { data } = await axios.get(`/orders.json?auth=${token}`);
             const orders = [];
             for (let order in data) {
                 orders.push({
@@ -39,10 +39,10 @@ const setPurchaseFailed = error => ({
     type: actions.PURCHASE_FAILED,
     error
 });
-export const purchase = order => (
+export const purchase = (order, token) => (
     async dispatch => {
         try {
-            const res = await axios.post('/orders.json', order);
+            const res = await axios.post('/orders.json?auth=' + token, order);
 
             dispatch(setPurchaseSuccess(res.data.name, order));
         } catch (e) {

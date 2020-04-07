@@ -10,15 +10,15 @@ import { Link } from 'react-router-dom';
 
 function Orders(props) {
     const [state, setState] = useState({ orders: [], loading: false });
-    const { fetchOrders, error } = props;
+    const { fetchOrders, error, token } = props;
 
     useEffect(() => {
         setState(state => ({ ...state, loading: true }));
 
-        fetchOrders().then(() =>
+        fetchOrders(token).then(() =>
             setState(state => ({ ...state, loading: false }))
         );
-    }, [fetchOrders, error]);
+    }, [fetchOrders, error, token]);
 
     const orderList = props.orders.length ? (
         props.orders
@@ -27,12 +27,14 @@ function Orders(props) {
             })
             .reverse()
     ) : (
-        <div className={'tcenter'}>You can <Link to={'/'}>build your burger</Link> anytime :)</div>
+        <div className={'tcenter'}>
+            You can <Link to={'/'}>build your burger</Link> anytime :)
+        </div>
     );
 
     return (
         <div className={classes.Orders}>
-            {state.loading ? <Spinner /> : orderList }
+            {state.loading ? <Spinner /> : orderList}
             {error && <p className={'tcenter'}>Oops... Something went wrong</p>}
         </div>
     );
@@ -41,10 +43,11 @@ function Orders(props) {
 const mapStateToProps = state => ({
     orders: state.orders.orders,
     error: state.orders.error,
+    token: state.auth.token,
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchOrders: () => dispatch(actions.fetchOrders()),
+    fetchOrders: token => dispatch(actions.fetchOrders(token)),
 });
 
 export default connect(

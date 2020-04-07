@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import Input from '../../components/UI/Input/Input';
 import Button from '../../components/UI/Button/Button';
 import classes from './Auth.module.css';
-import { auth, logOut } from '../../store/actions';
+import { auth, authRedirect } from '../../store/actions';
 import Spinner from '../../components/UI/Spinners/Spinner';
 
 function Auth(props) {
@@ -29,7 +30,11 @@ function Auth(props) {
         loading: false,
         signIn: true,
     });
-
+    useEffect(() => {
+       if (!props.buildingBurger && (props.authRedirectValue !== '/')) {
+           authRedirect('/')
+       }
+    });
     const inputChangeHandler = (e, type) => {
         const updatedControls = {
             ...state.controls,
@@ -75,8 +80,14 @@ function Auth(props) {
         setState(state => ({ ...state, signIn: !state.signIn }));
     };
 
+    let redirectWhileAuthenticated = null;
+    if (props.isAuthenticated) {
+        redirectWhileAuthenticated = <Redirect to={props.authRedirectValue} />
+    }
+
     return (
         <div className={classes.Auth}>
+            {redirectWhileAuthenticated}
             <div className={classes.Top}>
                 <h2>{state.signIn ? 'Sign in' : 'Sign up'}</h2>
                 {state.signIn ? (
@@ -99,5 +110,11 @@ function Auth(props) {
         </div>
     );
 }
-const mapStateToProps = state => ({ loading: state.auth.loading, error: state.auth.error });
-export default connect(mapStateToProps, { auth, logOut })(Auth);
+const mapStateToProps = state => ({
+    loading: state.auth.loading,
+    error: state.auth.error,
+    isAuthenticated: state.auth.token !== null,
+    buildingBurger: state.bb.building,
+    authRedirectValue: state.auth.authRedirectValue
+});
+export default connect(mapStateToProps, { auth, authRedirect })(Auth);
